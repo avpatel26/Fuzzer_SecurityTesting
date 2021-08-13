@@ -1,25 +1,48 @@
+# Fuzzing the desktop calculator
 
-Structure of this repository:
+This repo implements a custom fuzzer to find memory-error vulnerabilities in a C program specified in the src/original directory.  
 
-* src/original/: -  where the code for the original application lives
-* src/vuln-1 -- src/vuln-5 - where your vulnerable versions will live
-* poc/:        -  where your PoCs will live
-* fuzzer/:     -  where your fuzzer will live
-* bin/:        -  where your compiled programs will live
-* tests/:      -  where your generated tests will live
+## Directory structure
+```
+├── Makefile: building the project
+├── build.sh
+├── fuzzer: Fuzzing tool
+│   ├── Fuzzer.java
+│   ├── Instruction.java
+│   └── OperandType.java
+├── get_coverage.sh: generates coverage report
+├── poc: contains input which triggers vulnerabilities
+│   ├── vuln-1.poc
+│   ├── ...
+├── run_fuzzer.sh: running the fuzzer
+├── run_tests.sh: running generated test cases
+├── src
+│   ├── include
+│   │   └── debug.h
+│   ├── original: original application code
+│   │   └── dc.c
+│   ├── vuln-1: contains code with security vulnerability that can be triggered with poc
+│   ├── ...
+└── state.properties
+```
 
-Pre-Included Scripts:
+## Setup of fuzzer
 
-* Makefile         - makefile for building the C implementation etc.
-* get_coverage.sh  - script to generate coverage reports
-* run_fuzzer.sh    - script for running your fuzzer to generate inputs 
-* run_tests.sh     - script for running your generated tests against compiled programs 
+1. Install Clang and LLVM 6.0 and run make
 
-Vulnerable Versions (you should put your security vulnerabilities in here):
+```
+sudo apt-get install libfuzzer-6.0-dev llvm-6.0
+make
+```
 
-* src/vuln-1/dc.c -- src/vuln-5/dc.c
+2. AdressSanitiser enabled, for detecting memory errors
 
-Proofs of Concept (PoCs that you should provide for each vulnerability):
+```
+./bin/vuln-1/dc-san poc/vuln-1.poc
+```
 
-* poc/vuln-1.poc -- poc/vuln-5.poc
+3. Get coverage of fuzzer
 
+```
+./get_coverage.sh <directory>/
+```
